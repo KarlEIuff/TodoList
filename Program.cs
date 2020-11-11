@@ -14,7 +14,6 @@ namespace ToDoList2
             public string date;
             public string status;
             public string title;
-
             public Todo(string arg1, string arg2, string arg3)
             {
                 date = arg1;
@@ -41,26 +40,12 @@ namespace ToDoList2
 
                 switch (commandWord[0]){
                     case "quit":
-                        string dummy;
                         bool Q = true;
                         Console.WriteLine("Vill du spara innan du stänger av? (j/n)");
                         // Ser till så att användaren anger korrekt svar
                         do
                         {
-                            dummy = Console.ReadLine();
-                            if (dummy == "j")
-                            {
-                                Save(TodoList, path);
-                                Q = false;
-                            }
-                            else if (dummy == "n")
-                            {
-                                Q = false;
-                            }
-                            else
-                            {
-                                Console.WriteLine("Svara med antingen ett 'j' eller 'n'");
-                            }
+                            Q = SaveQ(path, TodoList, Q);
                         } while (Q);
                         
                         check = true;
@@ -72,20 +57,7 @@ namespace ToDoList2
                         // Ser till så att användaren anger korrekt svar
                         do
                         {
-                            dummy = Console.ReadLine();
-                            if (dummy == "j")
-                            {
-                                Save(TodoList, path);
-                                L = false;
-                            }
-                            else if (dummy == "n")
-                            {
-                                L = false;
-                            }
-                            else
-                            {
-                                Console.WriteLine("Svara med antingen ett 'j' eller 'n'");
-                            }
+                            L = SaveQ(path, TodoList, L);
                         } while (L);
                         path = commandWord[1];
                         TodoList = Load(path);
@@ -96,20 +68,18 @@ namespace ToDoList2
                         if(commandWord.Length == 1)
                         {
                             Save(TodoList, path);
-                            Console.WriteLine("Lista Sparad");
                         }
                         else
                         {
                             Save(TodoList, commandWord[1]);
-                            Console.WriteLine("Lista Sparad");
                         }
+                        Console.WriteLine("Lista Sparad");
                         break;
                     default:
                         Console.WriteLine("Okänt kommando! Försök igen");
                         break;
                     case "visa":
                         Console.WriteLine("N  datum  S rubrik\n--------------------------------------------");
-
                         for(int i = 0; i < TodoList.Count; i++)
                         {
                             string date = TodoList[i].date;
@@ -121,11 +91,7 @@ namespace ToDoList2
                             {
                                 if (status != "*")
                                 {
-                                    string fullText = i + 1 + ": "
-                                                  + String.Format("{0,-6}", String.Format("{0," + ((6 + date.Length) / 2).ToString() + "}", date))
-                                                  + " " + status
-                                                  + " " + title;
-                                    Console.WriteLine(fullText);
+                                    Print(date, status, title, i);
                                 }
                             }
                             else if(commandWord.Length == 2)
@@ -134,40 +100,19 @@ namespace ToDoList2
                                 {
                                     if (status == "*")
                                     {
-                                        string fullText = i + 1 + ": "
-                                                  + String.Format("{0,-6}", String.Format("{0," + ((6 + date.Length) / 2).ToString() + "}", date))
-                                                  + " " + status
-                                                  + " " + title;
-                                        Console.WriteLine(fullText);
+                                        Print(date, status, title, i);
                                     }
                                 }
                                 else if(commandWord[1] == "allt")
                                 {
-                                    string fullText = i + 1 + ": "
-                                                  + String.Format("{0,-6}", String.Format("{0," + ((6 + date.Length) / 2).ToString() + "}", date))
-                                                  + " " + status
-                                                  + " " + title;
-                                    Console.WriteLine(fullText);
+                                    Print(date, status, title, i);
                                 }
                             }
-                            
-                            
                         }
                         Console.WriteLine("--------------------------------------------");
                         break;
                     case "move":
-                        int oldPos = int.Parse(commandWord[1]) - 1;
-                        if(commandWord[2] == "up")
-                        {
-                            Todo temp = TodoList[oldPos];
-                            TodoList.RemoveAt(oldPos);
-                            TodoList.Insert(oldPos - 1, temp);
-                        } else if(commandWord[2] == "down")
-                        {
-                            Todo temp = TodoList[oldPos];
-                            TodoList.RemoveAt(oldPos);
-                            TodoList.Insert(oldPos + 1, temp);
-                        }
+                        TodoList = Move(commandWord, TodoList);
                         break;
                     case "delete":
                         int position = int.Parse(commandWord[1]);
@@ -198,13 +143,10 @@ namespace ToDoList2
                         {
                             Console.WriteLine("Ange en korrekt status!");
                         }
-                        
                         break;
                 }
-
             } while (!check);
         }
-
         static void Save(List<Todo> Todo, string path)
         {
             List<String> allLines = new List<string>();
@@ -216,7 +158,6 @@ namespace ToDoList2
             }
             File.WriteAllLines(path, allLines);
         }
-
         static List<Todo> Load(string path)
         {
             List<Todo> TodoList = new List<Todo>();
@@ -227,9 +168,51 @@ namespace ToDoList2
                 string[] splittedLine = linesFromFile[i].Split('#');
                 TodoList.Add(new Todo(splittedLine[0], splittedLine[1], splittedLine[2]));
             }
-
             return TodoList;
         }
-
+        static List<Todo> Move(string[] commandWord, List<Todo> todoList)
+        {
+            int oldPos = int.Parse(commandWord[1]) - 1;
+            if (commandWord[2] == "up")
+            {
+                Todo temp = todoList[oldPos];
+                todoList.RemoveAt(oldPos);
+                todoList.Insert(oldPos - 1, temp);
+            }
+            else if (commandWord[2] == "down")
+            {
+                Todo temp = todoList[oldPos];
+                todoList.RemoveAt(oldPos);
+                todoList.Insert(oldPos + 1, temp);
+            }
+            return todoList;
+        }
+        static void Print(string date, string status, string title, int i)
+        {
+            string fullText = i + 1 + ": "
+                                                  + String.Format("{0,-6}", String.Format("{0," + ((6 + date.Length) / 2).ToString() + "}", date))
+                                                  + " " + status
+                                                  + " " + title;
+            Console.WriteLine(fullText);
+        }
+        static bool SaveQ(string path, List<Todo> todoList, bool Q)
+        {
+            string dummy;
+            dummy = Console.ReadLine();
+            if (dummy == "j")
+            {
+                Save(todoList, path);
+                Q = false;
+            }
+            else if (dummy == "n")
+            {
+                Q = false;
+            }
+            else
+            {
+                Console.WriteLine("Svara med antingen ett 'j' eller 'n'");
+            }
+            return Q;
+        }
     }
 }
