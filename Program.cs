@@ -25,7 +25,7 @@ namespace ToDoList2
         static void Main(string[] args)
         {
             Console.WriteLine("Välkommen till TodoList!");
-            Console.WriteLine("Kommandon: quit, load 'filename', save, save 'filename', visa, move, add");
+            Console.WriteLine("Kommandon: quit, load 'filename', save, save 'filename', visa, move, add, delete");
 
             List<Todo> TodoList = new List<Todo>();
             bool check = false;
@@ -138,6 +138,10 @@ namespace ToDoList2
                             TodoList.RemoveAt(oldPos);
                             TodoList.Insert(oldPos + 1, temp);
                         }
+                        break;
+                    case "delete":
+                        int position = int.Parse(commandWord[1]);
+                        TodoList.RemoveAt(position - 1);
                         break;
                     case "add":
                         string tmp = "";
