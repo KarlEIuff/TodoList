@@ -25,7 +25,7 @@ namespace ToDoList2
         static void Main(string[] args)
         {
             Console.WriteLine("Välkommen till TodoList!");
-            Console.WriteLine("Kommandon: quit, load 'filename', save, save 'filename', visa");
+            Console.WriteLine("Kommandon: quit, load 'filename', save, save 'filename', visa, move");
 
             List<Todo> TodoList = new List<Todo>();
             bool check = false;
@@ -115,11 +115,28 @@ namespace ToDoList2
                             string date = TodoList[i].date;
                             string status = TodoList[i].status;
                             string title = TodoList[i].title;
+                            // Line 120 idea found from https://stackoverflow.com/questions/644017/net-format-a-string-with-fixed-spaces
+                            // To align text with center for the date
                             string fullText = i + 1 + ": " 
                                               + String.Format("{0,-6}", String.Format("{0," + ((6 + date.Length) / 2).ToString() + "}", date)) 
                                               + " " + status 
                                               + " " + title;
                             Console.WriteLine(fullText);
+                        }
+                        Console.WriteLine("--------------------------------------------");
+                        break;
+                    case "move":
+                        int oldPos = int.Parse(commandWord[1]) - 1;
+                        if(commandWord[2] == "up")
+                        {
+                            Todo temp = TodoList[oldPos];
+                            TodoList.RemoveAt(oldPos);
+                            TodoList.Insert(oldPos - 1, temp);
+                        } else if(commandWord[2] == "down")
+                        {
+                            Todo temp = TodoList[oldPos];
+                            TodoList.RemoveAt(oldPos);
+                            TodoList.Insert(oldPos + 1, temp);
                         }
                         break;
                 }
