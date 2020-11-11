@@ -25,7 +25,7 @@ namespace ToDoList2
         static void Main(string[] args)
         {
             Console.WriteLine("Välkommen till TodoList!");
-            Console.WriteLine("Kommandon: quit, load 'filename', save, save 'filename'");
+            Console.WriteLine("Kommandon: quit, load 'filename', save, save 'filename', visa");
 
             List<Todo> TodoList = new List<Todo>();
             bool check = false;
@@ -44,6 +44,7 @@ namespace ToDoList2
                         string dummy;
                         bool Q = true;
                         Console.WriteLine("Vill du spara innan du stänger av? (j/n)");
+                        // Ser till så att användaren anger korrekt svar
                         do
                         {
                             dummy = Console.ReadLine();
@@ -68,6 +69,7 @@ namespace ToDoList2
                     case "load":
                         bool L = true;
                         Console.WriteLine("Vill du spara innan du laddar en ny fil? (j/n)");
+                        // Ser till så att användaren anger korrekt svar
                         do
                         {
                             dummy = Console.ReadLine();
@@ -90,6 +92,7 @@ namespace ToDoList2
                         Console.WriteLine("Lista Laddad");
                         break;
                     case "save":
+                        // Kollar om användaren anger en ny sökväg, annars används den gamla som användes vid load
                         if(commandWord.Length == 1)
                         {
                             Save(TodoList, path);
@@ -103,6 +106,21 @@ namespace ToDoList2
                         break;
                     default:
                         Console.WriteLine("Okänt kommando! Försök igen");
+                        break;
+                    case "visa":
+                        Console.WriteLine("N  datum  S rubrik\n--------------------------------------------");
+
+                        for(int i = 0; i < TodoList.Count; i++)
+                        {
+                            string date = TodoList[i].date;
+                            string status = TodoList[i].status;
+                            string title = TodoList[i].title;
+                            string fullText = i + 1 + ": " 
+                                              + String.Format("{0,-6}", String.Format("{0," + ((6 + date.Length) / 2).ToString() + "}", date)) 
+                                              + " " + status 
+                                              + " " + title;
+                            Console.WriteLine(fullText);
+                        }
                         break;
                 }
 
