@@ -25,7 +25,7 @@ namespace ToDoList2
         static void Main(string[] args)
         {
             Console.WriteLine("Välkommen till TodoList!");
-            Console.WriteLine("Kommandon: quit, load 'filename', save, save 'filename', visa, move, add, delete");
+            Console.WriteLine("Kommandon: quit, load 'filename', save, save 'filename', visa, move, add, delete, set");
 
             List<Todo> TodoList = new List<Todo>();
             bool check = false;
@@ -117,11 +117,41 @@ namespace ToDoList2
                             string title = TodoList[i].title;
                             // Line 120 idea found from https://stackoverflow.com/questions/644017/net-format-a-string-with-fixed-spaces
                             // To align text with center for the date
-                            string fullText = i + 1 + ": " 
-                                              + String.Format("{0,-6}", String.Format("{0," + ((6 + date.Length) / 2).ToString() + "}", date)) 
-                                              + " " + status 
-                                              + " " + title;
-                            Console.WriteLine(fullText);
+                            if(commandWord.Length == 1)
+                            {
+                                if (status != "*")
+                                {
+                                    string fullText = i + 1 + ": "
+                                                  + String.Format("{0,-6}", String.Format("{0," + ((6 + date.Length) / 2).ToString() + "}", date))
+                                                  + " " + status
+                                                  + " " + title;
+                                    Console.WriteLine(fullText);
+                                }
+                            }
+                            else if(commandWord.Length == 2)
+                            {
+                                if (commandWord[1] == "klara")
+                                {
+                                    if (status == "*")
+                                    {
+                                        string fullText = i + 1 + ": "
+                                                  + String.Format("{0,-6}", String.Format("{0," + ((6 + date.Length) / 2).ToString() + "}", date))
+                                                  + " " + status
+                                                  + " " + title;
+                                        Console.WriteLine(fullText);
+                                    }
+                                }
+                                else if(commandWord[1] == "allt")
+                                {
+                                    string fullText = i + 1 + ": "
+                                                  + String.Format("{0,-6}", String.Format("{0," + ((6 + date.Length) / 2).ToString() + "}", date))
+                                                  + " " + status
+                                                  + " " + title;
+                                    Console.WriteLine(fullText);
+                                }
+                            }
+                            
+                            
                         }
                         Console.WriteLine("--------------------------------------------");
                         break;
@@ -151,6 +181,24 @@ namespace ToDoList2
                         }
                         Todo nyUppgift = new Todo(commandWord[1], "v", tmp);
                         TodoList.Add(nyUppgift);
+                        break;
+                    case "set":
+                        int pos = int.Parse(commandWord[1]);
+                        if(commandWord[2] == "avklarad")
+                        {
+                            TodoList[pos - 1].status = "*";
+                        } else if(commandWord[2] == "väntande")
+                        {
+                            TodoList[pos - 1].status = "v";
+                        } else if(commandWord[2] == "pågående")
+                        {
+                            TodoList[pos - 1].status = "P";
+                        }
+                        else
+                        {
+                            Console.WriteLine("Ange en korrekt status!");
+                        }
+                        
                         break;
                 }
 
