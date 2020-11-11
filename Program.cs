@@ -9,6 +9,9 @@ namespace ToDoList2
 {
     class Program
     {
+        /* CLASS: Todo
+         * PURPOSE: A todo task
+        */
         class Todo
         {
             public string date;
@@ -26,6 +29,7 @@ namespace ToDoList2
             Console.WriteLine("Välkommen till TodoList!");
             Console.WriteLine("Kommandon: quit, load 'filename', save, save 'filename', visa, move, add, delete, set");
 
+            // INITIAL DECLARATIONS
             List<Todo> TodoList = new List<Todo>();
             bool check = false;
             string command;
@@ -59,12 +63,14 @@ namespace ToDoList2
                         {
                             L = SaveQ(path, TodoList, L);
                         } while (L);
+
+                        // TBD: Check if path is valid
                         path = commandWord[1];
                         TodoList = Load(path);
                         Console.WriteLine("Lista Laddad");
                         break;
                     case "save":
-                        // Kollar om användaren anger en ny sökväg, annars används den gamla som användes vid load
+                        // Checks if user assigned a new path or not
                         if(commandWord.Length == 1)
                         {
                             Save(TodoList, path);
@@ -75,9 +81,6 @@ namespace ToDoList2
                         }
                         Console.WriteLine("Lista Sparad");
                         break;
-                    default:
-                        Console.WriteLine("Okänt kommando! Försök igen");
-                        break;
                     case "visa":
                         Console.WriteLine("N  datum  S rubrik\n--------------------------------------------");
                         for(int i = 0; i < TodoList.Count; i++)
@@ -85,8 +88,7 @@ namespace ToDoList2
                             string date = TodoList[i].date;
                             string status = TodoList[i].status;
                             string title = TodoList[i].title;
-                            // Line 120 idea found from https://stackoverflow.com/questions/644017/net-format-a-string-with-fixed-spaces
-                            // To align text with center for the date
+                            
                             if(commandWord.Length == 1)
                             {
                                 if (status != "*")
@@ -112,14 +114,17 @@ namespace ToDoList2
                         Console.WriteLine("--------------------------------------------");
                         break;
                     case "move":
+                        // TBD: Check if position is a valid position
                         TodoList = Move(commandWord, TodoList);
                         break;
                     case "delete":
+                        // TBD: Check if position is a valid position
                         int position = int.Parse(commandWord[1]);
                         TodoList.RemoveAt(position - 1);
                         break;
                     case "add":
                         string tmp = "";
+                        // Adds each word after index 1 from commandWord into a whole string
                         for(int i = 2; i < commandWord.Length; i++)
                         {
                             tmp += commandWord[i] + " ";
@@ -128,6 +133,7 @@ namespace ToDoList2
                         TodoList.Add(nyUppgift);
                         break;
                     case "set":
+                        // TBD: Check if position is a valid position
                         int pos = int.Parse(commandWord[1]);
                         if(commandWord[2] == "avklarad")
                         {
@@ -144,9 +150,21 @@ namespace ToDoList2
                             Console.WriteLine("Ange en korrekt status!");
                         }
                         break;
+                    default:
+                        Console.WriteLine("Okänt kommando! Försök igen");
+                        break;
                 }
             } while (!check);
         }
+
+        // METHODS
+
+        /* METHOD: Save
+         * PURPOSE: Save a todo list to a file in given path
+         * PARAMETERS: List<Todo> Todo - The list to be saved
+         *             string path - the path to save the list at
+         * RETURN VALUE: None
+         */
         static void Save(List<Todo> Todo, string path)
         {
             List<String> allLines = new List<string>();
@@ -158,6 +176,12 @@ namespace ToDoList2
             }
             File.WriteAllLines(path, allLines);
         }
+
+        /* METHOD: Load
+         * PURPOSE: Loads a todo list from a file in given path
+         * PARAMETERS: string path - the path to load from
+         * RETURN VALUE: The todo list from the file that was loaded
+         */
         static List<Todo> Load(string path)
         {
             List<Todo> TodoList = new List<Todo>();
@@ -170,6 +194,13 @@ namespace ToDoList2
             }
             return TodoList;
         }
+
+        /* METHOD: Move
+         * PURPOSE: Moves a task up or down in the list
+         * PARAMETERS: string[] commandWord - Used to check what index that will get moved and in what direction
+         *             List<Todo> todoList - The list with the task that will get moved
+         * RETURN VALUE: The new list with updated positions for the tasks
+         */
         static List<Todo> Move(string[] commandWord, List<Todo> todoList)
         {
             int oldPos = int.Parse(commandWord[1]) - 1;
@@ -187,14 +218,33 @@ namespace ToDoList2
             }
             return todoList;
         }
+
+        /* METHOD: Print
+         * PURPOSE: Prints a todo list
+         * PARAMETERS: string date - the date of the task
+         *             string status - the status of the task
+         *             string title - the title of the task
+         *             int i - the position of the task
+         * RETURN VALUE: None
+         */
         static void Print(string date, string status, string title, int i)
         {
+            // Idea found from https://stackoverflow.com/questions/644017/net-format-a-string-with-fixed-spaces
+            // To align text with center for the date
             string fullText = i + 1 + ": "
-                                                  + String.Format("{0,-6}", String.Format("{0," + ((6 + date.Length) / 2).ToString() + "}", date))
-                                                  + " " + status
-                                                  + " " + title;
+                            + String.Format("{0,-6}", String.Format("{0," + ((6 + date.Length) / 2).ToString() + "}", date))
+                            + " " + status
+                            + " " + title;
             Console.WriteLine(fullText);
         }
+
+        /* METHOD: SaveQ
+         * PURPOSE: Checks wether or not the user wants to save their changes before performing an action
+         * PARAMETERS: string path - the path to save the list to if the user wants to save
+         *             List<Todo> todoList - the list to save if the user wants to save it
+         *             bool Q - Checks if the user entered a valid letter or not
+         * RETURN VALUE: The bool to check if the program has to ask the user again to enter a letter in case the previous was invalid
+         */
         static bool SaveQ(string path, List<Todo> todoList, bool Q)
         {
             string dummy;
